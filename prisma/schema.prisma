@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Location {
+  defaultId        String   @id @default(auto()) @map("_id") @db.ObjectId
+  lat              String
+  long             String
+  locality         String
+  country          String
+  Circuit          Circuit? @relation(fields: [circuitDefaultId], references: [defaultId])
+  circuitDefaultId String?  @db.ObjectId
+}
+
+model Circuit {
+  defaultId     String     @id @default(auto()) @map("_id") @db.ObjectId
+  id            String
+  name          String
+  round         String
+  url           String
+  location      Location[]
+  Race          Race?      @relation(fields: [raceDefaultId], references: [defaultId])
+  raceDefaultId String?    @db.ObjectId
+}
+
+model Race {
+  defaultId String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  season    String
+  round     String
+  url       String
+  circuit   Circuit[]
+  date      DateTime
+  time      DateTime
+}
+
+model Driver {
+  defaultId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String
+  code        String
+  url         String
+  givenName   String
+  familyName  String
+  number      Int
+  nationality String
+  dateOfBirth DateTime
+  Results     Results? @relation(fields: [resultsId], references: [id])
+  resultsId   String?  @db.ObjectId
+}
+
+model Constructor {
+  defaultId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String
+  name        String
+  nationality String
+  url         String
+  Results     Results? @relation(fields: [resultsId], references: [id])
+  resultsId   String?  @db.ObjectId
+}
+
+model RaceTime {
+  defaultId String   @id @default(auto()) @map("_id") @db.ObjectId
+  time      DateTime
+  millis    String
+  Results   Results? @relation(fields: [resultsId], references: [id])
+  resultsId String?  @db.ObjectId
+}
+
+model FastestLap {
+  defaultId    String   @id @default(auto()) @map("_id") @db.ObjectId
+  time         DateTime
+  rank         Int
+  lap          Int
+  averageSpeed String
+  units        String
+  Results      Results? @relation(fields: [resultsId], references: [id])
+  resultsId    String?  @db.ObjectId
+}
+
+model Results {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  driver      Driver[]
+  constructor Constructor[]
+  fastestLap  FastestLap[]
+  grid        Int
+  laps        Int
+  status      String
+  time        RaceTime[]
+  attr        Attr[]
+}
+
+type Attr {
+  number        String
+  position      String
+  positionIndex String
+  points        String
+}

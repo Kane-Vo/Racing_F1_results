@@ -7,8 +7,10 @@ ENV NODE_ENV $NODE_ENV
 
 RUN mkdir /app
 WORKDIR /app
-ADD package.json yarn.lock .env /app/
+ADD package.json package-lock.json .env /app/
 ADD . /app
-RUN yarn --pure-lockfile
 
-CMD ["yarn", "deploy"]
+RUN npm install
+RUN npx prisma generate
+
+CMD ["npm", "run", "dev"]

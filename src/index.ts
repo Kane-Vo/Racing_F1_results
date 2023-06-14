@@ -1,19 +1,12 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import cors from "cors";
+import RaceResultController from "./controllers/race-result-controller";
+import App from "./app";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const app: Express = express();
+const app = new App([new RaceResultController()], PORT);
 
-app.use(cors());
-app.use(express.json());
-
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Nhiệt liệt chào mừng quý vị đại coder!</h1>");
-});
-
-app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
+app.listen();
 

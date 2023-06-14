@@ -1,19 +1,19 @@
 services:
-  postgres:
-    image: postgres
-    container_name: postgres_racing_container
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+  mongodb:
+    image: mongo:4.2.3-bionic
+    container_name: mongodb
     ports:
-      - "5432:5432"
-    restart: unless-stopped
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=results
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+
   api:
-    container_name: boiler_api_container
+    container_name: race_results_api
     build: .
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      - mongodb
 
