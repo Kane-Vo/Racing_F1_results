@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import bodyParser from "body-parser";
 
 import { BaseController } from "./controllers/abstractions/base-controller";
 
@@ -16,12 +17,11 @@ class App {
   }
 
   private initializeMiddlewares() {
-    this.app.use(express.json());
+    this.app.use(bodyParser.json());
     this.app.use(cors());
   }
 
   private initializeControllers(controllers: BaseController[]) {
-    console.log(123)
     this.app.get("/", (request, response) => {
       response.send("Application is running");
     });

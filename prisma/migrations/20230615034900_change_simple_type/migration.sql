@@ -1,0 +1,12 @@
+-- AlterTable
+ALTER TABLE "Driver" ALTER COLUMN "dateOfBirth" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "FastestLap" ALTER COLUMN "time" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Race" ALTER COLUMN "date" SET DATA TYPE TEXT,
+ALTER COLUMN "time" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "RaceTime" ALTER COLUMN "time" SET DATA TYPE TEXT;

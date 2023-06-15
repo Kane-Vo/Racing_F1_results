@@ -1,5 +1,9 @@
 import express from "express";
 import { BaseController } from "./abstractions/base-controller";
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
 export default class RaceResultController extends BaseController {
   public path = "/races";
 
@@ -13,7 +17,24 @@ export default class RaceResultController extends BaseController {
   }
 
   list = async (request: express.Request, response: express.Response) => {
-    console.log(123)
-    return response.json({ message: "test"});
+    console.log(request.query)
+    // const limit:  = request.query.limit ?? 3;
+    // const page:  = request.query.limit ?? 1;
+    // const offset: number = page * limit - limit;
+
+    const allUsers = await prisma.results.findMany({
+      // take: limit,
+      // skip: offset,
+      include: {
+        driver: true,
+        constructors: true,
+        fastestLap: true,
+        time: true,
+        circuit: true,
+        _count: true
+      },
+    })
+  
+    return response.json({ message: allUsers});
   };
 }

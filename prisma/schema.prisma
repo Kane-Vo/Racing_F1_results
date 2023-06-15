@@ -6,100 +6,101 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
-model Location {
-  defaultId        String   @id @default(auto()) @map("_id") @db.ObjectId
-  lat              String
-  long             String
-  locality         String
-  country          String
-  Circuit          Circuit? @relation(fields: [circuitDefaultId], references: [defaultId])
-  circuitDefaultId String?  @db.ObjectId
-}
+  model Location {
+    id        Int   @id @default(autoincrement())
+    lat              String
+    long             String
+    locality         String
+    country          String
+    circuit    Circuit     @relation(fields: [circuitId], references: [id])
+    circuitId  Int
+  }
+  
+  model Circuit {
+    id     Int     @id @default(autoincrement())
+    circuitId            String
+    name          String
+    round         String
+    url           String
+    locations     Location[]
+    races          Race[]
+    results     Results? @relation(fields: [resultId], references: [id])
+    resultId   Int
 
-model Circuit {
-  defaultId     String     @id @default(auto()) @map("_id") @db.ObjectId
-  id            String
-  name          String
-  round         String
-  url           String
-  location      Location[]
-  Race          Race?      @relation(fields: [raceDefaultId], references: [defaultId])
-  raceDefaultId String?    @db.ObjectId
-}
+  }
+  
+  model Race {
+    id Int    @id @default(autoincrement())
+    name      String
+    season    String
+    round     String
+    url       String
+    date      String
+    time      String
+    circuit    Circuit     @relation(fields: [circuitId], references: [id])
+    circuitId  Int
 
-model Race {
-  defaultId String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  season    String
-  round     String
-  url       String
-  circuit   Circuit[]
-  date      DateTime
-  time      DateTime
-}
-
-model Driver {
-  defaultId   String   @id @default(auto()) @map("_id") @db.ObjectId
-  id          String
-  code        String
-  url         String
-  givenName   String
-  familyName  String
-  number      Int
-  nationality String
-  dateOfBirth DateTime
-  Results     Results? @relation(fields: [resultsId], references: [id])
-  resultsId   String?  @db.ObjectId
-}
-
-model Constructor {
-  defaultId   String   @id @default(auto()) @map("_id") @db.ObjectId
-  id          String
-  name        String
-  nationality String
-  url         String
-  Results     Results? @relation(fields: [resultsId], references: [id])
-  resultsId   String?  @db.ObjectId
-}
-
-model RaceTime {
-  defaultId String   @id @default(auto()) @map("_id") @db.ObjectId
-  time      DateTime
-  millis    String
-  Results   Results? @relation(fields: [resultsId], references: [id])
-  resultsId String?  @db.ObjectId
-}
-
-model FastestLap {
-  defaultId    String   @id @default(auto()) @map("_id") @db.ObjectId
-  time         DateTime
-  rank         Int
-  lap          Int
-  averageSpeed String
-  units        String
-  Results      Results? @relation(fields: [resultsId], references: [id])
-  resultsId    String?  @db.ObjectId
-}
-
-model Results {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  driver      Driver[]
-  constructor Constructor[]
-  fastestLap  FastestLap[]
-  grid        Int
-  laps        Int
-  status      String
-  time        RaceTime[]
-  attr        Attr[]
-}
-
-type Attr {
-  number        String
-  position      String
-  positionIndex String
-  points        String
-}
+  }
+  
+  model Driver {
+    id   Int   @id @default(autoincrement())
+    driverId          String
+    code        String
+    url         String
+    givenName   String
+    familyName  String
+    number      String
+    nationality String
+    dateOfBirth String
+    results     Results? @relation(fields: [resultId], references: [id])
+    resultId   Int
+  }
+  
+  model Constructor {
+    id   Int   @id @default(autoincrement())
+    constructorId          String
+    name            String
+    nationality     String
+    url             String
+    results     Results? @relation(fields: [resultId], references: [id])
+    resultId   Int
+  }
+  
+  model RaceTime {
+    id Int   @id @default(autoincrement())
+    time      String
+    millis    String
+    results     Results? @relation(fields: [resultId], references: [id])
+    resultId   Int
+  }
+  
+  model FastestLap {
+    id    Int   @id @default(autoincrement())
+    time         String
+    rank         String
+    lap          String
+    averageSpeed String
+    units        String
+    results     Results? @relation(fields: [resultId], references: [id])
+    resultId   Int
+  }
+  
+  model Results {
+    id          Int        @id @default(autoincrement())
+    driver      Driver[]
+    constructors Constructor[]
+    fastestLap  FastestLap[]
+    grid        String
+    laps        String
+    status      String
+    time        RaceTime[]
+    number        String
+    position      String
+    positionText String
+    points        String
+    circuit        Circuit[]
+  }

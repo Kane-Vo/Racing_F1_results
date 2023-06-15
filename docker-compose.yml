@@ -1,19 +1,20 @@
 services:
-  mongodb:
-    image: mongo:4.2.3-bionic
-    container_name: mongodb
-    ports:
-      - 27017:27017
+  postgres:
+    container_name: postgres_container
+    image: postgres
     environment:
-      - MONGO_INITDB_DATABASE=results
-      - MONGO_INITDB_ROOT_USERNAME=mongodb
-      - MONGO_INITDB_ROOT_PASSWORD=mongodb
-
-  api:
-    container_name: race_results_api
-    build: .
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      # PGDATA: /data/postgres
     ports:
-      - "3000:3000"
-    depends_on:
-      - mongodb
+      - "5432:5432"
+    restart: unless-stopped
+
+  # api:
+  #   container_name: race_results_api
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mongodb
 
