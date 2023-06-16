@@ -2,6 +2,13 @@ import express from "express";
 import { BaseController } from "./abstractions/base-controller";
 import { PrismaClient } from '@prisma/client'
 
+interface CustomReqQuery {
+  limit: string | '10',
+  page: string | '1',
+  driver: string | undefined,
+  constructor: string | undefined
+}
+
 const prisma = new PrismaClient()
 
 export default class RaceResultController extends BaseController {
@@ -17,24 +24,65 @@ export default class RaceResultController extends BaseController {
   }
 
   list = async (request: express.Request, response: express.Response) => {
-    console.log(request.query)
-    // const limit:  = request.query.limit ?? 3;
-    // const page:  = request.query.limit ?? 1;
-    // const offset: number = page * limit - limit;
-
-    const allUsers = await prisma.results.findMany({
-      // take: limit,
-      // skip: offset,
+    const { limit, page, driver, constructor } = request.query as unknown as CustomReqQuery;
+    const offset: number = parseInt(page) * parseInt(limit) - parseInt(limit);
+    const condition: any = {
+      take: parseInt(limit),
+      skip: offset,
       include: {
         driver: true,
         constructors: true,
         fastestLap: true,
         time: true,
-        circuit: true,
-        _count: true
+        circuit: true
       },
-    })
+      orderBy: [
+        {
+          number: 'asc',
+        }
+      ],
+    }
+    const searchConstructor = JSON.stringify(constructor)
+    const searchDriver = JSON.stringify(driver)
+
+    if (searchConstructor !== undefined || searchDriver !== undefined) condition.where = {}
+
+    if (searchDriver !== undefined) {
+      condition.where.driver = {  
+        some: {
+          OR: [
+            {
+              givenName: {
+                search: searchDriver 
+              }
+            },
+            {
+              familyName: {
+                search: searchDriver 
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    if (searchConstructor !== undefined) {
+      condition.where.constructors = {
+        some: {
+          name: {
+            search: searchConstructor
+          }
+        }
+      }
+    }
+    try {
+      const results = await prisma.results.findMany(condition)
+      return response.json({ data: results });
+
+    } catch (error) {
+      console.log(error)
+    }
+    
   
-    return response.json({ message: allUsers});
   };
 }
