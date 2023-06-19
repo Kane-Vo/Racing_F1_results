@@ -4,12 +4,14 @@
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
+  binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
 }
 
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
 }
+
 
   model Location {
     id        Int   @id @default(autoincrement())

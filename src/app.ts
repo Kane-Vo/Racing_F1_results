@@ -19,6 +19,11 @@ class App {
   private initializeMiddlewares() {
     this.app.use(bodyParser.json());
     this.app.use(cors());
+    this.app.use((error: any, request: any, response: any, next: any) => {
+      console.log( `error ${error.message}`) // log the error
+      const status = error.status || 400
+      response.status(status).send(error.message)
+    })
   }
 
   private initializeControllers(controllers: BaseController[]) {
